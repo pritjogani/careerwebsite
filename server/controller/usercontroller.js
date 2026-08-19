@@ -23,16 +23,15 @@ if(userexist){
     return res.status(400).json({message:"email already exist"});
 }
 
-if(role === "hr")
+if(role === "hr" || role === "HR")
 {
-
-    const hrcreated = await User.create({username,password,email,city,phone,companyname,age,ishr:true})
+    const hrcreated = await User.create({username,password,email,city,phone,companyname,age,ishr:true,role:"hr"})
     console.log(hrcreated)
     res.status(200).json({message: "registration succesfull", token: await hrcreated.generateToken(), userID:hrcreated._id.toString(),})
 }
 else
 {
-    const employee = await User.create({username,password,email,city,phone,collage,age,cgpa})
+    const employee = await User.create({username,password,email,city,phone,collage,age,cgpa,ishr:false,role:"user"})
     console.log(employee);
     res.status(200).json({message: "registration succesfull", token: await employee.generateToken(), userID:employee._id.toString(),})
 }
@@ -90,5 +89,29 @@ const user = async (req,res) =>{
     }
 }
 
+const updateUser = async (req, res) => {
+    try {
+        const userId = req.userID;
+        const updateData = { ...req.body };
 
-module.exports = {home,user,register,login};
+        // Prevent security sensitive fields from arbitrary override
+        delete updateData.password;
+        delete updateData.ishr;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $set: updateData },
+            { new: true }
+        ).select({ password: 0 });
+
+        return res.status(200).json({
+            message: "Profile updated successfully",
+            userData: updatedUser
+        });
+    } catch (error) {
+        console.log(`Error updating user profile: ${error}`);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+module.exports = { home, user, register, login, updateUser };

@@ -13,12 +13,9 @@ import { Applyforjobs } from "./pages/Applyforjobs";
 import { Page404 } from "./pages/Page404"
 import { Hrlayout } from "./components/layouts/Hrlayout"
 
+import { UserProfile } from "./pages/UserProfile"
 import { Hregister } from "./pages/Hregister"
 import { Useregister } from "./pages/Useregister"
-// import { Hrlayout } from "./components/layouts/Hr-layout"
-
-
-
 
 const App = () =>{
   return <>
@@ -34,11 +31,10 @@ const App = () =>{
         <Route path= "/jobs" element={<Jobs />} />
         <Route path= "/userregister" element={<Useregister />} />
         <Route path= "/hregister" element={<Hregister />} />
-        {/* <Route path= "/hrhome" element={<Hrhome />} /> */}
+        <Route path= "/profile" element={<UserProfile />} />
         <Route path= "/contact" element={<Contact />} />
-        <Route path="*" element={<Page404 />} /> 
-
         <Route path="/applyforjobs" element={<Applyforjobs />} />
+        <Route path="*" element={<Page404 />} />
 
 
 

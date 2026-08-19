@@ -1,156 +1,252 @@
-import { Link, NavLink } from "react-router-dom"
-import { Jobs } from "./Jobs"
+import { Link } from "react-router-dom";
 import { useAuth } from "../store/auth";
+import { Footer } from "../components/Footer";
 
-export const Home = () =>{
+export const Home = () => {
+  const { user, isLoggedIn } = useAuth();
 
-  const {user} = useAuth(); 
-    return (
-        <>
-        <div>
-        <div className="main">
-      <div className="section-hero">
-        <div className="container grid lg:grid-cols-2 sm:grid-cols-1 ">
-          <div className="section-hero--content">
-          <p className="text-5xl text-slate-700 mb-3">Welcome {user ?`${user.username}  `: `to our website`}</p>
-          <h1></h1>
-            <p className="hero-subheading">Elevate your career from dreams to reality</p>
-            <h1 className="hero-heading">Find your dream job at just the right moment with CareerOnTime.</h1>
-            <p className="hero-para">
-            At CareerOnTime, we understand that finding the right job isn’t just about timing—it’s about finding the perfect match for your skills and aspirations. Let us guide you to opportunities that align with your career goals and come at just the right moment for your professional growth.
-            </p>
-            <div className="hero-btn">
-             {/* <button className=""> <NavLink to="">Apply Jobs </NavLink></button> */}
-            </div>
-          </div>
-          <div className="section-hero-img">
-            <figure>
-              <img src="boy.png" alt="Study Material" />
-            </figure>
-          </div>
-        </div>
-      </div>
-      <div className="custom-shape-divider-bottom-1707119447">
-        <svg
-          data-name="Layer 1"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1200 120"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z"
-            opacity=".25"
-            className="shape-fill"
-          ></path>
-          <path
-            d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z"
-            opacity=".5"
-            className="shape-fill"
-          ></path>
-          <path
-            d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"
-            className="shape-fill"
-          ></path>
-        </svg>
-      </div>
-    </div>
-    </div>
-    
-    <div className="mb-10 ">
-      <p className="font-semibold text-center m-8 text-5xl">Get ahead with CareerOnTime</p>
-      <p className=" text-center m-2 ">we are serving up trusted insights and anonymous conversation.<br /> so you will have the goods you need to succeed  </p>
-    </div>
-    <div className="grid  sm:grid-cols-2  lg:grid-cols-4 ">
-      <div className="transition-transform transform hover:scale-110 hover:shadow-xl" >
-      <div className="flex justify-center">
-      <img src="msg.png" alt="" className="m-8 w-44" />
-      </div>
-        <p className="text-center">Join your work community</p>
-      </div>
-      <div className="transition-transform transform hover:scale-110 hover:shadow-xl">
-      <div className="flex justify-center">
-      <img src="job.png" alt="" className="m-8 w-48" />
-      </div>
-        <p className="text-center"> Find and apply to jobs</p>
-      </div>
-      <div className="transition-transform transform hover:scale-110 hover:shadow-xl">
-      <div className="flex justify-center">
-      <img src="mobile.png" alt="" className="m-8 w-48" />
-      </div>
-        <p className="text-center pt-3">Search company reviews</p>
-      </div>
-      <div className="transition-transform transform hover:scale-110 hover:shadow-xl">
-      <div className="flex justify-center">
-      <img src="sal.png" alt="" className="m-8 w-48" />
-      </div>
-        <p className="text-center pt-4"> Compare salaries</p>
-      </div>
-    </div>
-    <div className="mb-56"></div>
-    <footer className="bg-gray-900 text-white py-12">
-    <div className="container mx-auto px-6 md:px-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-           
-            <div>
-                <h3 className="text-2xl font-bold mb-4">Quick Links</h3>
-                <ul className="space-y-4">
-                    <li>
-                        <NavLink to="/" className="text-lg hover:text-blue-400 transition-colors text-white">Home</NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/jobs" className="text-lg hover:text-blue-400 transition-colors text-white">Jobs</NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/about" className="text-lg hover:text-blue-400 transition-colors text-white">About</NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/contact" className="text-lg hover:text-blue-400 transition-colors text-white">Contact</NavLink>
-                    </li>
-                </ul>
-            </div>
+  const features = [
+    {
+      icon: "fa-solid fa-users-viewfinder",
+      title: "Work Community",
+      desc: "Connect with verified peers, mentors, and hiring managers in your domain.",
+      color: "from-blue-500 to-indigo-600",
+      bgColor: "bg-blue-50",
+      textColor: "text-blue-600",
+    },
+    {
+      icon: "fa-solid fa-paper-plane",
+      title: "Instant Job Applications",
+      desc: "Apply directly to vetted tech, finance, and creative roles in a few clicks.",
+      color: "from-emerald-500 to-teal-600",
+      bgColor: "bg-emerald-50",
+      textColor: "text-emerald-600",
+    },
+    {
+      icon: "fa-solid fa-building-circle-check",
+      title: "Verified Companies",
+      desc: "Direct access to authenticated HR recruiters with zero middle-man spam.",
+      color: "from-amber-500 to-orange-600",
+      bgColor: "bg-amber-50",
+      textColor: "text-amber-600",
+    },
+    {
+      icon: "fa-solid fa-money-bill-trend-up",
+      title: "Transparent Salaries",
+      desc: "Explore accurate compensation ranges and benchmark your market value.",
+      color: "from-purple-500 to-pink-600",
+      bgColor: "bg-purple-50",
+      textColor: "text-purple-600",
+    },
+  ];
 
-           
-            <div>
-                <h3 className="text-2xl font-bold mb-4">About Us</h3>
-                <p className="text-lg text-gray-400">We provide the best job opportunities and connect job seekers with the right companies. Join us today and explore amazing career paths!</p>
-            </div>
+  const stats = [
+    { label: "Active Job Listings", value: "2,500+" },
+    { label: "Partner Companies", value: "850+" },
+    { label: "Successful Hires", value: "12,000+" },
+    { label: "Candidate Match Rate", value: "98%" },
+  ];
 
-            <div>
-                <h3 className="text-2xl font-bold mb-4">Contact</h3>
-    
-                <p className="text-lg text-gray-400">Email: joganiprit2004@gmail.com</p>
-                <p className="text-lg text-gray-400">Phone: 8160882490</p>
-            </div>
+  return (
+    <div className="min-h-screen flex flex-col bg-slate-50">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28 bg-gradient-to-b from-blue-50/60 via-slate-50 to-white">
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+        <div className="absolute top-1/3 left-10 w-80 h-80 bg-indigo-400/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
 
-            <div>
-                <h3 className="text-2xl font-bold mb-4">Follow Us</h3>
-                <div className="flex space-x-6">
-                    <a href="#" className="text-3xl text-gray-400 hover:text-blue-400 transition-colors">
-                        <i className="fab fa-facebook"></i>
-                    </a>
-                    <a href="#" className="text-3xl text-gray-400 hover:text-blue-400 transition-colors">
-                        <i className="fab fa-twitter"></i>
-                    </a>
-                    <a href="#" className="text-3xl text-gray-400 hover:text-blue-400 transition-colors">
-                        <i className="fab fa-linkedin"></i>
-                    </a>
-                    <a href="#" className="text-3xl text-gray-400 hover:text-blue-400 transition-colors">
-                        <i className="fab fa-instagram"></i>
-                    </a>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            {/* Left Content */}
+            <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+              {user ? (
+                <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-100/80 text-blue-800 text-xs sm:text-sm font-semibold">
+                  <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+                  <span>Welcome back, {user.username}!</span>
                 </div>
+              ) : (
+                <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-100/80 text-blue-800 text-xs sm:text-sm font-semibold">
+                  <i className="fa-solid fa-sparkles text-blue-600 text-xs"></i>
+                  <span>Elevate Your Professional Journey</span>
+                </div>
+              )}
+
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
+                Find your dream job at just the{" "}
+                <span className="gradient-text">right moment.</span>
+              </h1>
+
+              <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                At CareerOnTime, we believe that career growth is all about timing and the right opportunity match. Explore curated openings from industry-leading companies and start applying in seconds.
+              </p>
+
+              {/* Action Buttons */}
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                <Link
+                  to="/jobs"
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base shadow-lg shadow-blue-500/25 hover:shadow-blue-500/35 hover:-translate-y-0.5 transition-all flex items-center justify-center space-x-2"
+                >
+                  <span>Explore All Jobs</span>
+                  <i className="fa-solid fa-arrow-right text-sm"></i>
+                </Link>
+
+                {!isLoggedIn && (
+                  <Link
+                    to="/register"
+                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-white hover:bg-slate-100 text-slate-800 font-semibold text-base border border-slate-200 shadow-sm transition-all flex items-center justify-center"
+                  >
+                    Create Free Account
+                  </Link>
+                )}
+              </div>
+
+              {/* Trust Badges */}
+              <div className="pt-4 flex items-center justify-center lg:justify-start space-x-6 text-slate-500 text-xs sm:text-sm">
+                <div className="flex items-center space-x-2">
+                  <i className="fa-solid fa-circle-check text-emerald-500 text-base"></i>
+                  <span>100% Free for Candidates</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <i className="fa-solid fa-circle-check text-emerald-500 text-base"></i>
+                  <span>Verified Employers</span>
+                </div>
+              </div>
             </div>
-        </div>
 
-     
-        <div className="mt-12 border-t border-gray-700 pt-8 text-center">
-            <p className="text-lg text-gray-400">&copy; 2024 JobPortal. All Rights Reserved.</p>
+            {/* Right Graphic / Illustration Card */}
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="relative w-full max-w-md">
+                <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-3xl transform rotate-2 scale-105 opacity-20 blur-xl"></div>
+                <div className="relative bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 space-y-6">
+                  {/* Card Header Preview */}
+                  <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-xl font-bold shadow-md shadow-blue-500/20">
+                        <i className="fa-solid fa-code"></i>
+                      </div>
+                      <div>
+                        <h2 className="font-bold text-slate-900 text-base">Senior Full-Stack Developer</h2>
+                        <p className="text-xs text-slate-500">TechCorp Global • Remote</p>
+                      </div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold">
+                      Open
+                    </span>
+                  </div>
+
+                  {/* Highlights */}
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div className="bg-slate-50 p-3 rounded-xl">
+                      <p className="text-slate-400 font-medium">Annual Salary</p>
+                      <p className="font-bold text-slate-800 text-sm mt-0.5">$95,000 - $130,000</p>
+                    </div>
+                    <div className="bg-slate-50 p-3 rounded-xl">
+                      <p className="text-slate-400 font-medium">Experience</p>
+                      <p className="font-bold text-slate-800 text-sm mt-0.5">3+ Years (MERN)</p>
+                    </div>
+                  </div>
+
+                  {/* Badges */}
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold">React.js</span>
+                    <span className="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-semibold">Node.js</span>
+                    <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold">MongoDB</span>
+                    <span className="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 text-xs font-semibold">Tailwind</span>
+                  </div>
+
+                  {/* Mock Action */}
+                  <div className="pt-2">
+                    <Link
+                      to="/jobs"
+                      className="block text-center w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold text-sm shadow-md shadow-blue-500/20 hover:opacity-95 transition"
+                    >
+                      View Live Opportunities
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </section>
+
+      {/* Stats Counter Section */}
+      <section className="py-12 bg-white border-y border-slate-200/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            {stats.map((item, idx) => (
+              <div key={idx} className="text-center p-4">
+                <p className="text-3xl sm:text-4xl font-extrabold text-blue-600 tracking-tight">{item.value}</p>
+                <p className="text-xs sm:text-sm font-medium text-slate-600 mt-1">{item.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Feature Highlights Section */}
+      <section className="py-16 sm:py-24 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+              Why CareerOnTime
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
+              Everything you need to accelerate your career
+            </h2>
+            <p className="text-base text-slate-600 mt-3 leading-relaxed">
+              We provide trusted insights, instant employer connectivity, and streamlined application management in one unified portal.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            {features.map((feat, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm hover:shadow-card-hover hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between"
+              >
+                <div>
+                  <div className={`w-14 h-14 rounded-2xl ${feat.bgColor} ${feat.textColor} flex items-center justify-center text-2xl mb-6`}>
+                    <i className={feat.icon}></i>
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">{feat.title}</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">{feat.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16 bg-gradient-bg text-white relative overflow-hidden">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+            Ready to take the next step in your career?
+          </h2>
+          <p className="text-blue-100 text-base sm:text-lg max-w-2xl mx-auto">
+            Join thousands of professionals and top hiring companies who trust CareerOnTime for fast, transparent hiring.
+          </p>
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              to="/jobs"
+              className="px-8 py-3.5 rounded-xl bg-white text-blue-700 font-bold text-base hover:bg-blue-50 shadow-lg transition-all"
+            >
+              Search Jobs Now
+            </Link>
+            <Link
+              to="/hregister"
+              className="px-8 py-3.5 rounded-xl bg-blue-800/80 hover:bg-blue-800 text-white font-semibold text-base border border-blue-400/40 transition-all"
+            >
+              Post a Job as HR
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
-</footer>
+  );
+};
 
-
-    
-    </>
-        //  <Jobs />
-    )
-}
+export default Home;

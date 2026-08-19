@@ -25,6 +25,7 @@ const usermiddleware = async (req,res,next) =>{
         return res.status(401).json({message:"unauthorized invaild token"})
 
     }
+    
     next();
 }
 

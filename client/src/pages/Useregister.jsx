@@ -1,228 +1,261 @@
 import { useState } from "react";
 import { useAuth } from "../store/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Footer } from "../components/Footer";
+import { API_BASE_URL } from "../config/api";
 
 export const Useregister = () => {
-    const { storeTokenInLs } = useAuth();
-    const [user, setUser] = useState({
-        username: "",
-        password: "",
-        email: "",
-        phone: "",
-        city: "",
-        college: "",
-        age: "",
-        companyname: "",
-        cgpa: "",
-        role:""
-    });
+  const { storeTokenInLs } = useAuth();
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  const [user, setUser] = useState({
+    username: "",
+    password: "",
+    email: "",
+    phone: "",
+    city: "",
+    collage: "",
+    age: "",
+    cgpa: "",
+    role: "user",
+  });
 
-    // Handling input value
-    const handleinput = (e) => {
-        const { name, value } = e.target;
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleInput = (e) => {
+    const { name, value } = e.target;
+    setUser((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(user),
+      });
+
+      const res_data = await response.json();
+
+      if (response.ok) {
+        storeTokenInLs(res_data.token);
         setUser({
-            ...user,
-            [name]: value,
+          username: "",
+          password: "",
+          email: "",
+          phone: "",
+          city: "",
+          collage: "",
+          age: "",
+          cgpa: "",
+          role: "user",
         });
-    };
+        toast.success("Account created successfully!");
+        navigate("/");
+      } else {
+        toast.error(res_data.extradetails || res_data.message || "Registration failed");
+      }
+    } catch (error) {
+      toast.error("Unable to connect to the server.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    // Handling form submission
-    const handlesubmit = async (e) => {
-        e.preventDefault();
-        console.log(user);
+  return (
+    <div className="min-h-screen flex flex-col bg-slate-50">
+      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col justify-center">
+        <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-xl space-y-8">
+          {/* Header */}
+          <div className="text-center space-y-2">
+            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mx-auto shadow-sm">
+              <i className="fa-solid fa-user-graduate"></i>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Create Candidate Account
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto">
+              Join CareerOnTime as a job seeker to apply for jobs and connect with top recruiters.
+            </p>
+          </div>
 
-        try {
-            const response = await fetch(`http://localhost:5000/api/auth/register`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(user),
-            });
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {/* Account details */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  Full Name / Username <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  value={user.username}
+                  onChange={handleInput}
+                  placeholder="e.g. John Doe"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
 
-            const res_data = await response.json();
-            if (response.ok) {
-                storeTokenInLs(res_data.token);
-                setUser({
-                    username: "",
-                    password: "",
-                    email: "",
-                    phone: "",
-                    city: "",
-                    college: "",
-                    age: "",
-                    cgpa: "",
-                    role:""
-                });
-                toast.success("Registration successful");
-                navigate("/");
-            }
-        } catch (error) {
-            console.log("Something went wrong", error);
-            toast.error("Registration failed. Please try again.");
-        }
-    };
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  Email Address <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={user.email}
+                  onChange={handleInput}
+                  placeholder="john@example.com"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
 
-    return (
-        <>
-            <section className="min-h-screen flex items-center justify-center min-h-screen bg-gray">
-                <main className="w-full max-w-8xl mx-auto px-6 py-12">
-                    <div className="bg-white p-8 md:p-12 rounded-lg shadow-lg grid grid-cols-1 lg:grid-cols-2 gap-12 w-full">
-                        {/* Image Section */}
-                        <div className="registration-image flex justify-center items-center">
-                            <img src="fill.png" alt="Registration Illustration" className="w-full max-w-4xl object-cover" />
-                        </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  Password <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={user.password}
+                    onChange={handleInput}
+                    placeholder="••••••••"
+                    required
+                    className="w-full px-4 pr-10 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none text-sm"
+                  >
+                    <i className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
+                  </button>
+                </div>
+              </div>
 
-                        {/* Form Section */}
-                        <div className="registration-form w-full">
-                            <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">Registration Form</h1>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  Phone Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={user.phone}
+                  onChange={handleInput}
+                  placeholder="+91 98765 43210"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
 
-                            <form onSubmit={handlesubmit} className="space-y-6 w-full">
-                                {/* Username */}
-                                <div>
-                                    <label htmlFor="username" className="block text-lg font-medium text-gray-700">Username</label>
-                                    <input
-                                        type="text"
-                                        name="username"
-                                        id="username"
-                                        placeholder="Enter your username"
-                                        required
-                                        autoComplete="off"
-                                        value={user.username}
-                                        onChange={handleinput}
-                                        className="w-full mt-1 px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  City / Location <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="city"
+                  value={user.city}
+                  onChange={handleInput}
+                  placeholder="e.g. Ahmedabad, Mumbai"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
 
-                                {/* Email */}
-                                <div>
-                                    <label htmlFor="email" className="block text-lg font-medium text-gray-700">Email</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        id="email"
-                                        placeholder="Enter your email"
-                                        required
-                                        autoComplete="off"
-                                        value={user.email}
-                                        onChange={handleinput}
-                                        className="w-full mt-1 px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  Age <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="age"
+                  value={user.age}
+                  onChange={handleInput}
+                  placeholder="e.g. 23"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
 
-                                {/* Phone */}
-                                <div>
-                                    <label htmlFor="phone" className="block text-lg font-medium text-gray-700">Phone</label>
-                                    <input
-                                        type="number"
-                                        name="phone"
-                                        id="phone"
-                                        placeholder="Enter phone number"
-                                        required
-                                        autoComplete="off"
-                                        value={user.phone}
-                                        onChange={handleinput}
-                                        className="w-full mt-1 px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  College / University <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="collage"
+                  value={user.collage}
+                  onChange={handleInput}
+                  placeholder="e.g. GTU / IIT Bombay"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
 
-                                {/* Password */}
-                                <div>
-                                    <label htmlFor="password" className="block text-lg font-medium text-gray-700">Password</label>
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        id="password"
-                                        placeholder="Enter password"
-                                        required
-                                        autoComplete="off"
-                                        value={user.password}
-                                        onChange={handleinput}
-                                        className="w-full mt-1 px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  CGPA / Grade Percentage <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  name="cgpa"
+                  value={user.cgpa}
+                  onChange={handleInput}
+                  placeholder="e.g. 8.5"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
+            </div>
 
-                             
-                                {/* City */}
-                                <div>
-                                    <label htmlFor="city" className="block text-lg font-medium text-gray-700">City</label>
-                                    <input
-                                        type="text"
-                                        name="city"
-                                        id="city"
-                                        placeholder="Enter your city"
-                                        required
-                                        autoComplete="off"
-                                        value={user.city}
-                                        onChange={handleinput}
-                                        className="w-full mt-1 px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                </div>
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm shadow-md shadow-blue-500/20 hover:shadow-blue-500/30 transition-all flex items-center justify-center space-x-2"
+              >
+                {isLoading ? (
+                  <>
+                    <i className="fa-solid fa-circle-notch fa-spin text-sm"></i>
+                    <span>Creating Account...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Complete Candidate Registration</span>
+                    <i className="fa-solid fa-arrow-right text-xs"></i>
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
 
-                                {/* College */}
-                                <div>
-                                    <label htmlFor="college" className="block text-lg font-medium text-gray-700">College</label>
-                                    <input
-                                        type="text"
-                                        name="college"
-                                        id="college"
-                                        placeholder="Enter your college"
-                                        required
-                                        autoComplete="off"
-                                        value={user.college}
-                                        onChange={handleinput}
-                                        className="w-full mt-1 px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                </div>
+          <div className="pt-4 border-t border-slate-100 text-center text-xs text-slate-500">
+            Looking to post jobs instead?{" "}
+            <Link to="/hregister" className="font-bold text-indigo-600 hover:text-indigo-700 hover:underline">
+              Register as Employer / HR
+            </Link>
+          </div>
+        </div>
+      </main>
 
-                                {/* Age */}
-                                <div>
-                                    <label htmlFor="age" className="block text-lg font-medium text-gray-700">Age</label>
-                                    <input
-                                        type="number"
-                                        name="age"
-                                        id="age"
-                                        placeholder="Enter your age"
-                                        required
-                                        autoComplete="off"
-                                        value={user.age}
-                                        onChange={handleinput}
-                                        className="w-full mt-1 px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                </div>
-
-
-                                {/* CGPA */}
-                                <div>
-                                    <label htmlFor="cgpa" className="block text-lg font-medium text-gray-700">CGPA</label>
-                                    <input
-                                        type="text"
-                                        name="cgpa"
-                                        id="cgpa"
-                                        placeholder="Enter your CGPA"
-                                        required
-                                        autoComplete="off"
-                                        value={user.cgpa}
-                                        onChange={handleinput}
-                                        className="w-full mt-1 px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                </div>
-
-                                {/* Submit Button */}
-                                <button
-                                    type="submit"
-                                    className="w-full py-3 bg-blue-600 text-white font-semibold rounded-md shadow-lg hover:bg-blue-700 transition duration-300"
-                                >
-                                    Register Now
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </main>
-            </section>
-        </>
-    );
+      <Footer />
+    </div>
+  );
 };
+
+export default Useregister;

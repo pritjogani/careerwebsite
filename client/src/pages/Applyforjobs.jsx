@@ -1,310 +1,349 @@
-import { useState } from "react"
+import { useState, useEffect } from "react";
 import { useAuth } from "../store/auth";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { Footer } from "../components/Footer";
+import { API_BASE_URL } from "../config/api";
 
-
-const defaultjobform = {
+const defaultJobForm = {
   username: "",
-  email:"",
-  firstname:"",
-lastname:"",
-education:"",
-skills:"",
-achievement:"",
-expextedsalary:"",
-privioussalary:"",
-refrences:"",
-expirence:"",
-collagename:"",
+  email: "",
+  firstname: "",
+  lastname: "",
+  education: "",
+  skills: "",
+  achievement: "",
+  expextedsalary: "",
+  privioussalary: "",
+  refrences: "",
+  expirence: "",
+  collagename: "",
+};
 
-}
+export const Applyforjobs = () => {
+  const [applyJob, setApplyJob] = useState(defaultJobForm);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-
-export const Applyforjobs = () =>{
-    const [appyjob , setapplyjob]  = useState(defaultjobform)
-    const [userdata , setuserdata] = useState(true);
-
-    const {user} = useAuth();
-    if(userdata && user) 
-    {
-      setapplyjob({
-        email:user.email,
-        username:user.username,
-        firstname:"",
-        lastname:"",
-        education:"",
-        skills:"",
-        achievement:"",
-        expextedsalary:"",
-        privioussalary:"",
-        refrences:"",
-        expirence:"",
-        collagename:"",
-       
-      })
-      setuserdata(false);
+  useEffect(() => {
+    if (user) {
+      setApplyJob((prev) => ({
+        ...prev,
+        email: user.email || "",
+        username: user.username || "",
+        collagename: user.collage || user.college || "",
+      }));
     }
-      const handlereq = (e) =>{
-        const name = e.target.name;
-        const value = e.target.value;
-        setapplyjob({
-            ...appyjob , [name] : value
-        }
-        
-        )
-    }
-  
+  }, [user]);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setApplyJob((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-  const fun = async (e) =>{
+  const handleSubmit = async (e) => {
     e.preventDefault();
-     console.log("data is",appyjob);
-    // console.log(user);
-   try {
-    const responce = await fetch("http://localhost:5000/api/job/applyforjob",{
-        method:"POST",
-        headers:{
-            "Content-Type":"application/json"
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/job/applyforjob`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        body:JSON.stringify(appyjob)
-    })
-    if(responce.ok){
-        setapplyjob(defaultjobform);
-        const data = await responce.json();
-        console.log(data);
-        alert("message send successfully")
+        body: JSON.stringify(applyJob),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setApplyJob(defaultJobForm);
+        toast.success("Application submitted successfully!");
+        navigate("/jobs");
+      } else {
+        toast.error(data.message || "Failed to submit application");
+      }
+    } catch (error) {
+      toast.error("Network error. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
     }
-    
-   } catch (error) {
-        console.log("invalid details")
-   }
+  };
 
-}
+  return (
+    <div className="min-h-screen flex flex-col bg-slate-50">
+      {/* Header Banner */}
+      <section className="bg-gradient-to-b from-blue-900 via-slate-900 to-slate-900 text-white py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3">
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold border border-blue-400/30">
+            <i className="fa-solid fa-file-signature text-xs"></i>
+            <span>Candidate Application Portal</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Submit Your Job Application</h1>
+          <p className="text-slate-300 text-sm max-w-xl mx-auto">
+            Fill out the details below carefully. Your application will be delivered directly to the hiring manager.
+          </p>
+        </div>
+      </section>
 
-   
-return <>
-<div>
-<div className="  mx-auto p-8 grid grid-cols-1 lg:grid-cols-2 gap-12 bg-gray-50 ">
-  <div className="hero-img flex justify-center items-center order-2 lg:order-1">
-    <img src="reigisterimg.png" alt="Register" className="" />
-  </div>
+      {/* Form Section */}
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full -mt-4">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Card 1: Personal Profile */}
+          <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
+            <div className="flex items-center space-x-3 pb-4 border-b border-slate-100">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                <i className="fa-solid fa-user text-base"></i>
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">Personal Information</h2>
+                <p className="text-xs text-slate-500">Basic contact information and account identification</p>
+              </div>
+            </div>
 
-  <div className="form-part order-1 lg:order-2">
-    <div className="text-6xl font-bold mb-8 text-center  text-gray-800">
-      Application Form
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  Username <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  value={applyJob.username}
+                  onChange={handleChange}
+                  placeholder="e.g. johndoe"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  Email Address <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={applyJob.email}
+                  onChange={handleChange}
+                  placeholder="e.g. john@example.com"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  First Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="firstname"
+                  value={applyJob.firstname}
+                  onChange={handleChange}
+                  placeholder="e.g. John"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  Last Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="lastname"
+                  value={applyJob.lastname}
+                  onChange={handleChange}
+                  placeholder="e.g. Doe"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Academic & Education */}
+          <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
+            <div className="flex items-center space-x-3 pb-4 border-b border-slate-100">
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+                <i className="fa-solid fa-graduation-cap text-base"></i>
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">Education & Background</h2>
+                <p className="text-xs text-slate-500">Degree, university, and formal qualifications</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  Highest Degree / Education <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="education"
+                  value={applyJob.education}
+                  onChange={handleChange}
+                  placeholder="e.g. B.Tech in Computer Science"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  College / University Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="collagename"
+                  value={applyJob.collagename}
+                  onChange={handleChange}
+                  placeholder="e.g. Gujarat Technological University"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Skills, Experience & Compensation */}
+          <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
+            <div className="flex items-center space-x-3 pb-4 border-b border-slate-100">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                <i className="fa-solid fa-laptop-code text-base"></i>
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">Experience & Compensation</h2>
+                <p className="text-xs text-slate-500">Skills, career history, salary expectations, and references</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  Key Skills <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="skills"
+                  value={applyJob.skills}
+                  onChange={handleChange}
+                  placeholder="e.g. React, Node.js, TypeScript, SQL"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  Total Experience <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="expirence"
+                  value={applyJob.expirence}
+                  onChange={handleChange}
+                  placeholder="e.g. 2.5 Years / Fresher"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  Previous / Current Salary <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="privioussalary"
+                  value={applyJob.privioussalary}
+                  onChange={handleChange}
+                  placeholder="e.g. $45,000 / ₹4.5 LPA"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  Expected Salary <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="expextedsalary"
+                  value={applyJob.expextedsalary}
+                  onChange={handleChange}
+                  placeholder="e.g. $65,000 / ₹7 LPA"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  Key Achievements / Projects <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  name="achievement"
+                  value={applyJob.achievement}
+                  onChange={handleChange}
+                  placeholder="Summarize notable projects, awards, or key achievements..."
+                  rows="3"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                  References / Portfolio Link <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="refrences"
+                  value={applyJob.refrences}
+                  onChange={handleChange}
+                  placeholder="e.g. GitHub link, portfolio URL, or reference contact"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50/50"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Submit CTA */}
+          <div className="pt-2 flex justify-end">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full sm:w-auto px-10 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-base shadow-lg shadow-blue-500/25 hover:shadow-blue-500/35 transition-all flex items-center justify-center space-x-2"
+            >
+              {isSubmitting ? (
+                <>
+                  <i className="fa-solid fa-spinner fa-spin text-sm"></i>
+                  <span>Submitting Application...</span>
+                </>
+              ) : (
+                <>
+                  <span>Submit Application</span>
+                  <i className="fa-solid fa-paper-plane text-sm"></i>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </main>
+
+      <Footer />
     </div>
+  );
+};
 
-    <form action="" onSubmit={fun} className="space-y-6">
-    
-      <div className="flex flex-col">
-        <label htmlFor="username" className="text-lg font-medium text-gray-700">
-          Username
-        </label>
-        <input
-          type="text"
-          className="mt-2 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          name="username"
-          placeholder="Enter username"
-          required
-          id="username"
-          value={appyjob.username}
-          onChange={handlereq}
-        />
-      </div>
-
-  
-      <div className="flex flex-col">
-        <label htmlFor="email" className="text-lg font-medium text-gray-700">
-          Email
-        </label>
-        <input
-          type="email"
-          className="mt-2 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          name="email"
-          placeholder="Enter email"
-          required
-          id="email"
-          value={appyjob.email}
-          onChange={handlereq}
-        />
-      </div>
-
-     
-      <div className="flex flex-col">
-        <label htmlFor="firstname" className="text-lg font-medium text-gray-700">
-          First Name
-        </label>
-        <input
-          type="text"
-          className="mt-2 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          name="firstname"
-          placeholder="Enter first name"
-          required
-          id="firstname"
-          value={appyjob.firstname}
-          onChange={handlereq}
-        />
-      </div>
-
- 
-      <div className="flex flex-col">
-        <label htmlFor="lastname" className="text-lg font-medium text-gray-700">
-          Last Name
-        </label>
-        <input
-          type="text"
-          className="mt-2 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          name="lastname"
-          placeholder="Enter last name"
-          required
-          id="lastname"
-          value={appyjob.lastname}
-          onChange={handlereq}
-        />
-      </div>
-
-      <div className="flex flex-col">
-        <label htmlFor="education" className="text-lg font-medium text-gray-700">
-          Education
-        </label>
-        <input
-          type="text"
-          className="mt-2 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          name="education"
-          placeholder="Enter education"
-          required
-          id="education"
-          value={appyjob.education}
-          onChange={handlereq}
-        />
-      </div>
-
-      <div className="flex flex-col">
-        <label htmlFor="skills" className="text-lg font-medium text-gray-700">
-          Skills
-        </label>
-        <input
-          type="text"
-          className="mt-2 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          name="skills"
-          placeholder="Enter skills"
-          required
-          id="skills"
-          value={appyjob.skills}
-          onChange={handlereq}
-        />
-      </div>
-
-
-      <div className="flex flex-col">
-        <label htmlFor="achievement" className="text-lg font-medium text-gray-700">
-          Achievements
-        </label>
-        <input
-          type="text"
-          className="mt-2 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          name="achievement"
-          placeholder="Enter achievements"
-          required
-          id="achievement"
-          value={appyjob.achievement}
-          onChange={handlereq}
-        />
-      </div>
-
-
-      <div className="flex flex-col">
-        <label htmlFor="expectedsalary" className="text-lg font-medium text-gray-700">
-          Expected Salary
-        </label>
-        <input
-          type="text"
-          className="mt-2 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          name="expectedsalary"
-          placeholder="Enter expected salary"
-          required
-          id="expectedsalary"
-          value={appyjob.expectedsalary}
-          onChange={handlereq}
-        />
-      </div>
-
-  
-      <div className="flex flex-col">
-        <label htmlFor="previoussalary" className="text-lg font-medium text-gray-700">
-          Previous Salary
-        </label>
-        <input
-          type="text"
-          className="mt-2 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          name="previoussalary"
-          placeholder="Enter previous salary"
-          required
-          id="previoussalary"
-          value={appyjob.previoussalary}
-          onChange={handlereq}
-        />
-      </div>
-
-
-      <div className="flex flex-col">
-        <label htmlFor="references" className="text-lg font-medium text-gray-700">
-          References
-        </label>
-        <input
-          type="text"
-          className="mt-2 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          name="references"
-          placeholder="Enter references"
-          required
-          id="references"
-          value={appyjob.references}
-          onChange={handlereq}
-        />
-      </div>
-
-    
-      <div className="flex flex-col">
-        <label htmlFor="experience" className="text-lg font-medium text-gray-700">
-          Experience
-        </label>
-        <input
-          type="text"
-          className="mt-2 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          name="experience"
-          placeholder="Enter experience"
-          required
-          id="experience"
-          value={appyjob.experience}
-          onChange={handlereq}
-        />
-      </div>
-
-      <div className="flex flex-col">
-        <label htmlFor="collegename" className="text-lg font-medium text-gray-700">
-          College Name
-        </label>
-        <input
-          type="text"
-          className="mt-2 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          name="collegename"
-          placeholder="Enter college name"
-          required
-          id="collegename"
-          value={appyjob.collegename}
-          onChange={handlereq}
-        />
-      </div>
-
-      <button
-        type="submit"
-        className="w-full py-3 mt-6 bg-blue-500 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-600 transition duration-300"
-      >
-        Submit
-      </button>
-    </form>
-  </div>
-</div>
-
- </div>
- </>
-}
+export default Applyforjobs;

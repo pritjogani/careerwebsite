@@ -1,141 +1,132 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { API_BASE_URL } from "../config/api";
 
-
-
-
-
-//context
+// Context
 export const AuthContext = createContext();
 
+// Provider function
+export const AuthProvider = ({ children }) => {
+    const [token, setToken] = useState(localStorage.getItem("token") || "");
+    const [user, setUser] = useState("");
+    const [hr, sethr] = useState(false);
+    const [isloading, setIsloading] = useState(true);
+    const [jobs, setjobs] = useState([]);
+    const authorizationtoken = token ? `Bearer ${token}` : "";
 
-//provider function
-export const AuthProvider = ({children})=>{
+    // Helper for HR detection
+    const isHR = Boolean(
+        hr || (user && (user.ishr === true || user.role === "hr" || user.role === "HR"))
+    );
 
-    const [token,setToken] = useState(localStorage.getItem("token"))
-    const [user,setUser] = useState("");
-    let [hr,sethr] = useState(false);
-    const [isloading ,setIsloading] = useState(true); 
-    const [jobs,setjobs] = useState([])
-    const authorizationtoken = `Bearer ${token}`;
-     
-    // const hrinfo = () =>{
-    //     if(user.ishr)
-    //     {
-    //         sethr(true);
-    //     }
-    // }
-
-
-    const Logoutuser = () =>{
+    const Logoutuser = () => {
         setToken("");
-        setUser("")
-        return localStorage.removeItem("token")
-        
-    
-    }
-    let isLoggedIn = !!token; 
-    
-   // console.log(isLoggedIn);
+        setUser("");
+        sethr(false);
+        localStorage.removeItem("token");
+    };
 
-    //any component access to this
-    const storeTokenInLs = (serverToken) =>{
-        setToken(serverToken);
-        return localStorage.setItem("token" , serverToken);
-    } 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //       try {
-    //         const response = await axios.get('http://localhost:5000/api/data');
-    //         setData(response.data);
-    //       } catch (error) {
-    //         console.error('Error fetching data:', error);
-    //       }
-    //     };
-    
-    //     fetchData();
-    //   }, []); // Empty dependency array ensures it runs only on the first load
-    
-    //add job opening in home portal
-const getjobs = async () =>{
-    try {
-        const responce = await fetch("http://localhost:5000/api/hr/alljobtitle",
-            {
-                method:"GET",
-                
-                
-            })
-            if(responce.ok)
-            {
-                const data = await responce.json();
-                // console.log(data);
-                setjobs(data)
+    const isLoggedIn = !!token;
+
+    // Add job opening in home portal
+    const getjobs = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/hr/alljobtitle`, {
+                method: "GET",
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setjobs(data);
             }
-    } catch (error) {
-        console.log(`jobs frontend error${error}`)
-    }
-}
+        } catch (error) {
+            console.log(`jobs frontend error: ${error}`);
+        }
+    };
 
+    // JWT authentication to get the current user data
+    const userAuthentication = useCallback(async (currentToken) => {
+        const activeToken = currentToken || token;
+        if (!activeToken) {
+            setUser("");
+            sethr(false);
+            setIsloading(false);
+            return;
+        }
 
-
-    //jwt authentication to get the currently user data
-    const userAuthentication = async () =>{
         try {
             setIsloading(true);
-            const responce = await fetch("http://localhost:5000/api/auth/user",{
-                method:"GET",
-                headers:{
-                    "Authorization": authorizationtoken,
+            const response = await fetch(`${API_BASE_URL}/api/auth/user`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${activeToken}`,
                 },
             });
-            if(responce.ok){
-                const data = await responce.json();
-                  //console.log(data.userData.ishr)
-                  
-                setUser(data.userData)
-                
-               
+
+            if (response.ok) {
+                const data = await response.json();
+                const userData = data.userData;
+                setUser(userData);
+                if (userData && (userData.ishr === true || userData.role === "hr" || userData.role === "HR")) {
+                    sethr(true);
+                } else {
+                    sethr(false);
+                }
                 setIsloading(false);
-            }
-            else{
-                console.log("error fetching user data")
+            } else {
+                console.log("Error fetching user data: unauthorized or invalid token");
+                setUser("");
+                sethr(false);
                 setIsloading(false);
             }
         } catch (error) {
-            console.log("error fetching user data");
-            
+            console.log("Error fetching user data:", error);
+            setUser("");
+            sethr(false);
+            setIsloading(false);
         }
-    }
+    }, [token]);
 
-useEffect(()=>{
-     getjobs();
-userAuthentication();
-// hrinfo();
+    // Store token in localStorage and immediately authenticate
+    const storeTokenInLs = (serverToken) => {
+        setToken(serverToken);
+        localStorage.setItem("token", serverToken);
+        userAuthentication(serverToken);
+    };
 
+    useEffect(() => {
+        getjobs();
+        if (token) {
+            userAuthentication(token);
+        } else {
+            setIsloading(false);
+        }
+    }, [token, userAuthentication]);
 
-},[])
+    return (
+        <AuthContext.Provider
+            value={{
+                hr,
+                isHR,
+                user,
+                storeTokenInLs,
+                Logoutuser,
+                isLoggedIn,
+                isloading,
+                userAuthentication,
+                jobs,
+                authorizationtoken,
+                getjobs,
+            }}
+        >
+            {children}
+        </AuthContext.Provider>
+    );
+};
 
-
-
-
-
-
-
-
-
-    return <AuthContext.Provider value={{ hr,user,storeTokenInLs,Logoutuser,isLoggedIn,isloading,userAuthentication,jobs,authorizationtoken}}>
-        {children}
-    </AuthContext.Provider>
-
-}
-
-
-//consumer delivery function
-export const useAuth = () =>{
+// Consumer delivery function
+export const useAuth = () => {
     const AuthContextValue = useContext(AuthContext);
-    if(!AuthContextValue)
-    {
-        throw new console.error(("useAuth used outside of the provider"));
-
+    if (!AuthContextValue) {
+        throw new Error("useAuth used outside of the provider");
     }
     return AuthContextValue;
-}
+};
